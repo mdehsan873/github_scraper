@@ -14,7 +14,6 @@ def get_user_details(user):
     followers=soup.find('div',{'class','flex-order-1 flex-md-order-none mt-2 mt-md-0'}).span.text
     save_details['FOLLOWERS']=followers
     save_details['REPOSTRIES']=repositories
-
     return save_details
 
 def get_details(user):
@@ -47,7 +46,6 @@ def scraper(name):
     page_no=0
     while True:
 
-      
         if page_no>10:
             break
 
@@ -55,6 +53,7 @@ def scraper(name):
         req=urllib.request.Request(url, headers={'User-Agent' : "Magic Browser"})
         page = urllib.request.urlopen( req )
         soup=BeautifulSoup(page.read(),"html.parser")
+        
         try:
             users=soup.find_all('div',{'class','d-flex hx_hit-user px-0 Box-row'})
             for user in users:
@@ -63,7 +62,9 @@ def scraper(name):
                     csvwriter.writerow(save_data)
             page_no+=1   
             time.sleep(5)
+        
         except:
             print(constant.ERROR)
             break
+
     out_file.close()
