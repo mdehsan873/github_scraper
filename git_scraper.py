@@ -12,9 +12,12 @@ def get_user_details(user):
 
     save_details = {}
     repositories = soup.find('nav', {'class', 'UnderlineNav-body width-full p-responsive'}).span.text
-    followers = soup.find('div', {'class', 'flex-order-1 flex-md-order-none mt-2 mt-md-0'}).span.text
-    save_details['FOLLOWERS'] = followers
-    save_details['REPOSTRIES'] = repositories
+    try:
+        followers = soup.find('div', {'class', 'flex-order-1 flex-md-order-none mt-2 mt-md-0'}).span.text
+        save_details['FOLLOWERS'] = followers
+        save_details['REPOSITORIES'] = repositories
+    except IOError:
+        print("No Page Found")
     return save_details
 
 
@@ -22,14 +25,12 @@ def get_details(user):
     user_name = user.find('a', {'class', 'color-fg-muted'})
     try:
         user_name = user_name.em.string
-    except Exception:
+    except IOError:
         return
     name = user.find('div', {'class', 'f4 text-normal'}).a.text.strip()
     bio = user.find('p', class_='mb-1')
 
-    save_details = {}
-    save_details['NAME'] = name
-    save_details['USER_NAME'] = user_name
+    save_details = {'NAME': name, 'USER_NAME': user_name}
     if bio:
         save_details['BIO'] = bio.text.strip()
     else:
@@ -41,7 +42,7 @@ def get_details(user):
 
 
 def scraper(name):
-    fields = ['NAME', 'USER_NAME', 'BIO', 'FOLLOWERS', 'REPOSTRIES']
+    fields = ['NAME', 'USER_NAME', 'BIO', 'FOLLOWERS', 'REPOSITORIES']
     out_file = open('scraped_data.csv', 'w')
     csvwriter = csv.DictWriter(out_file, delimiter=',', fieldnames=fields)
     save_data = {}
@@ -51,7 +52,7 @@ def scraper(name):
         if page_no > 10:
             break
 
-        url = constant.BASE_URL + str(page_no) + constant.ATTRIBUTE1 + name + constant.SEARCH_TYPE
+        url = f"{constant.BASE_URL}{page_no}{constant.ATTRIBUTE1}{name}{constant.SEARCH_TYPE}"
         req = urllib.request.Request(url, headers={'User-Agent': "Magic Browser"})
         page = urllib.request.urlopen(req)
         soup = BeautifulSoup(page.read(), "html.parser")
@@ -64,7 +65,7 @@ def scraper(name):
             page_no += 1
             time.sleep(5)
 
-        except Exception:
+        except RuntimeError:
             print(constant.ERROR)
             break
 

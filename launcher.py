@@ -1,8 +1,8 @@
-import git_scraper as git
+import git_scraper
 
-name = input("Enter name you want to  get data\n")
+name = input("Enter Query\n")
 if name:
     name = name.replace(' ', '+')
-    git.scraper(name)
+    git_scraper.scraper(name)
 else:
     print("Enter Valid Input")
