@@ -18,7 +18,7 @@ def get_user_details(user):
         user_details['REPOSITORIES'] = repositories
     except AttributeError:
         print(constant.ERROR)
-    return save_details
+    return user_details
 
 
 def get_details(user):
@@ -30,15 +30,15 @@ def get_details(user):
     name = user.find('div', {'class', 'f4 text-normal'}).a.text.strip()
     bio = user.find('p', class_='mb-1')
 
-    save_details = {'NAME': name, 'USER_NAME': user_name}
+    user_details = {'NAME': name, 'USER_NAME': user_name}
     if bio:
-        save_details['BIO'] = bio.text.strip()
+        user_details['BIO'] = bio.text.strip()
     else:
-        save_details['BIO'] = constant.BIO
+        user_details['BIO'] = constant.BIO
     time.sleep(5)
-    save_details.update(get_user_details(user_name))
-    print(save_details)
-    return save_details
+    user_details.update(get_user_details(user_name))
+    print(user_details)
+    return user_details
 
 
 def scraper(name):
