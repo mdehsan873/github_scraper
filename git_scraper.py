@@ -10,12 +10,12 @@ def get_user_details(user):
     req = requests.get(constant.USER_URL + user, headers={'User-Agent': "Magic Browser"})
     soup = BeautifulSoup(req.content, "html.parser")
 
-    save_details = {}
+    user_details = {}
     repositories = soup.find('nav', {'class', 'UnderlineNav-body width-full p-responsive'}).span.text
     try:
         followers = soup.find('div', {'class', 'flex-order-1 flex-md-order-none mt-2 mt-md-0'}).span.text
-        save_details['FOLLOWERS'] = followers
-        save_details['REPOSITORIES'] = repositories
+        user_details['FOLLOWERS'] = followers
+        user_details['REPOSITORIES'] = repositories
     except AttributeError:
         print(constant.ERROR)
     return save_details
