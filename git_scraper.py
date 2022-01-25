@@ -34,7 +34,7 @@ def get_details(user):
     if bio:
         user_details['BIO'] = bio.text.strip()
     else:
-        user_details['BIO'] = constant.BIO
+        user_details['BIO'] = None
     time.sleep(5)
     user_details.update(get_user_details(user_name))
     print(user_details)
