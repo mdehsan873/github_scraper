@@ -5,9 +5,9 @@ import constant
 import time
 
 
-def get_commit_fequency(repo_link, user):
+def get_commit_frequency(repo_link, user):
     req = requests.get(f"{constant.USER_URL}{repo_link}{constant.COMMIT_URL}", headers={'User-Agent': "Magic Browser"})
-    print(f"{constant.USER_URL}{repo_link}{constant.COMMIT_URL}")
+    # print(f"{constant.USER_URL}{repo_link}{constant.COMMIT_URL}")
     soup = BeautifulSoup(req.content, "html.parser")
     dates = soup.find_all('div', {'class', 'TimelineItem-badge'})
     numbers_of_commits = soup.find_all('div', {'class', 'flex-auto min-width-0'})
@@ -26,9 +26,10 @@ def get_repo(user):
     for repo in repositories:
         if repo:
             repo_link = repo.find('a', href=True)
-            avr_frequency = get_commit_fequency(repo_link['href'], user)
-            repositories_details['REPOSITORY_NAME'] = repo.a.string
+            avr_frequency = get_commit_frequency(repo_link['href'], user)
             repositories_details['AVERAGE_COMMITS'] = avr_frequency
+            repositories_details.update(repositories_details)
+    print(repositories_details)
     return repositories_details
 
 
