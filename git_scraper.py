@@ -17,8 +17,8 @@ def get_commit_frequency(repo_link, user):
         for date in dates:
             day_of_commit = date.find('relative-time', {'class', 'no-wrap'}).text
             try:
-                temp_last_date = (int)(day_of_commit[4] + day_of_commit[5])
-                temp_first_date = (int)(day_of_commit[4] + day_of_commit[5])
+                temp_last_date = int(day_of_commit[4] + day_of_commit[5])
+                temp_first_date = int(day_of_commit[4] + day_of_commit[5])
                 last_date = max(last_date, temp_last_date)
                 first_date = min(first_date, temp_first_date)
             except ValueError:
