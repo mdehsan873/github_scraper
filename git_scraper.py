@@ -9,12 +9,26 @@ def get_commit_frequency(repo_link, user):
     req = requests.get(f"{constant.USER_URL}{repo_link}{constant.COMMIT_URL}", headers={'User-Agent': "Magic Browser"})
     # print(f"{constant.USER_URL}{repo_link}{constant.COMMIT_URL}")
     soup = BeautifulSoup(req.content, "html.parser")
-    dates = soup.find_all('div', {'class', 'TimelineItem-badge'})
+    dates = soup.find_all('div', {'class', 'TimelineItem-body'})
     numbers_of_commits = soup.find_all('div', {'class', 'flex-auto min-width-0'})
-    try:
-        return len(dates) / (len(numbers_of_commits) - 1)
-    except ZeroDivisionError:
+    last_date = 0
+    first_date = 32
+    if dates:
+        for date in dates:
+            day_of_commit = date.find('relative-time', {'class', 'no-wrap'}).text
+            try:
+                temp_last_date = (int)(day_of_commit[4] + day_of_commit[5])
+                temp_first_date = (int)(day_of_commit[4] + day_of_commit[5])
+                last_date = max(last_date, temp_last_date)
+                first_date = min(first_date, temp_first_date)
+            except ValueError:
+                print('NO COMMITS')
+
+    else:
         return 0
+    commit_frequency = (last_date - first_date) / len(numbers_of_commits)
+    print("Frequency of Commits per days" f"{commit_frequency}")
+    return commit_frequency
 
 
 def get_repo(user):
