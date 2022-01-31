@@ -5,7 +5,11 @@ import constant
 import time
 
 
-def get_commit_frequency(repo_link, user):
+def get_commit_frequency(repo_link, user_details):
+    out_file = open('scraped_data.csv', 'a+')
+    fields = ['NAME', 'USER_NAME', 'BIO', 'FOLLOWERS', 'REPOSITORIES', 'REPOSITORY_NAME', 'AVERAGE_COMMITS']
+    csvwriter = csv.DictWriter(out_file, delimiter=',', fieldnames=fields)
+    repositories_detail = {}
     req = requests.get(f"{constant.USER_URL}{repo_link}{constant.COMMIT_URL}", headers={'User-Agent': "Magic Browser"})
     print(f"{constant.USER_URL}{repo_link}{constant.COMMIT_URL}")
     soup = BeautifulSoup(req.content, "html.parser")
@@ -27,11 +31,15 @@ def get_commit_frequency(repo_link, user):
     else:
         return 0
     commit_frequency = (last_date - first_date) / len(numbers_of_commits)
+    repositories_detail['REPOSITORY_NAME'] = repo_link
+    repositories_detail['AVERAGE_COMMITS'] = commit_frequency
+    user_details.update(repositories_detail)
+    print(user_details)
+    csvwriter.writerow(user_details)
     # print("Frequency of Commits per days" f"{commit_frequency}")
-    return commit_frequency
 
 
-def get_repo(user):
+def get_repo(user, user_details):
     req = requests.get(f"{constant.USER_URL}{user}{constant.REPO_URL}", headers={'User-Agent': "Magic Browser"})
     soup = BeautifulSoup(req.content, "html.parser")
     repositories = soup.find_all('div', {'class', 'col-10 col-lg-9 d-inline-block'})
@@ -41,13 +49,10 @@ def get_repo(user):
         if repo:
             repositories_detail = {}
             repo_link = repo.find('a', href=True)
-            avr_frequency = get_commit_frequency(repo_link['href'], user)
-            repositories_detail['REPOSITORY_NAME'] = repo_link['href']
-            repositories_detail['AVERAGE_COMMITS'] = avr_frequency
+            get_commit_frequency(repo_link['href'], user_details)
+
             print(repositories_detail)
             repositories_details.update(repositories_detail)
-    print(repositories_details)
-    return repositories_details
 
 
 def get_user_details(user):
@@ -70,8 +75,6 @@ def get_details(user):
     user_name = user.find('a', {'class', 'color-fg-muted'})
     try:
         user_name = user_name.em.string
-        user_details.update(get_repo(user_name))
-        print(user_details)
     except AttributeError:
         return
     name = user.find('div', {'class', 'f4 text-normal'}).a.text.strip()
@@ -84,8 +87,10 @@ def get_details(user):
     else:
         user_details['BIO'] = None
     time.sleep(5)
+    user_details['USER_NAME']=user_name
     user_details.update(get_user_details(user_name))
-    print(user_details)
+    get_repo(user_name, user_details)
+
     return user_details
 
 
