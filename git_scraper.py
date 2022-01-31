@@ -7,7 +7,7 @@ import time
 
 def get_commit_frequency(repo_link, user):
     req = requests.get(f"{constant.USER_URL}{repo_link}{constant.COMMIT_URL}", headers={'User-Agent': "Magic Browser"})
-    # print(f"{constant.USER_URL}{repo_link}{constant.COMMIT_URL}")
+    print(f"{constant.USER_URL}{repo_link}{constant.COMMIT_URL}")
     soup = BeautifulSoup(req.content, "html.parser")
     dates = soup.find_all('div', {'class', 'TimelineItem-body'})
     numbers_of_commits = soup.find_all('div', {'class', 'flex-auto min-width-0'})
@@ -27,7 +27,7 @@ def get_commit_frequency(repo_link, user):
     else:
         return 0
     commit_frequency = (last_date - first_date) / len(numbers_of_commits)
-    print("Frequency of Commits per days" f"{commit_frequency}")
+    # print("Frequency of Commits per days" f"{commit_frequency}")
     return commit_frequency
 
 
@@ -39,10 +39,13 @@ def get_repo(user):
     repositories_details = {}
     for repo in repositories:
         if repo:
+            repositories_detail = {}
             repo_link = repo.find('a', href=True)
             avr_frequency = get_commit_frequency(repo_link['href'], user)
-            repositories_details['AVERAGE_COMMITS'] = avr_frequency
-            repositories_details.update(repositories_details)
+            repositories_detail['REPOSITORY_NAME'] = repo_link['href']
+            repositories_detail['AVERAGE_COMMITS'] = avr_frequency
+            print(repositories_detail)
+            repositories_details.update(repositories_detail)
     print(repositories_details)
     return repositories_details
 
