@@ -29,7 +29,7 @@ def get_commit_frequency(repo_link, user_details):
                 print('NO COMMITS')
 
     else:
-        return 0
+        return
     commit_frequency = (last_date - first_date) / len(numbers_of_commits)
     repositories_detail['REPOSITORY_NAME'] = repo_link
     repositories_detail['AVERAGE_COMMITS'] = commit_frequency
@@ -90,8 +90,6 @@ def get_details(user):
     user_details['USER_NAME']=user_name
     user_details.update(get_user_details(user_name))
     get_repo(user_name, user_details)
-
-    return user_details
 
 
 def scraper(name):
